@@ -158,9 +158,18 @@ def substitute_mermaid_blocks(content: str, source_path: Path) -> str:
     def replace(match: re.Match) -> str:
         annotation = match.group(1) or ""
         code = match.group(2)
-        # annotation 에서 width 추출 (예: {width: 80%})
-        width_match = re.search(r"width\s*:\s*([^,}]+)", annotation)
-        width_style = f"max-width: {width_match.group(1).strip()};" if width_match else ""
+        # annotation 에서 width 추출 (예: {width: 80%}) → class 로 변환
+        # marp/marpit 이 raw HTML 의 inline style 속성을 무시하므로 class 기반 사용
+        width_match = re.search(r"width\s*:\s*(\d+)", annotation)
+        width_class = ""
+        if width_match:
+            n = int(width_match.group(1))
+            if n in (33, 66):
+                width_class = f" w{n}"
+            else:
+                # 5% 스텝으로 반올림
+                n5 = max(5, min(100, round(n / 5) * 5))
+                width_class = f" w{n5}"
 
         try:
             svg = render_mermaid(code, mmdc, config_path)
@@ -169,7 +178,7 @@ def substitute_mermaid_blocks(content: str, source_path: Path) -> str:
             sys.exit(f"[build] {source_path}:{line} {e}")
 
         data_uri = svg_to_data_uri(svg)
-        return f'<div class="mermaid-embed" style="{width_style}"><img src="{data_uri}" alt="mermaid diagram" /></div>'
+        return f'<div class="mermaid-embed{width_class}"><img src="{data_uri}" alt="mermaid diagram" /></div>'
 
     return MERMAID_PATTERN.sub(replace, content)
 
@@ -206,6 +215,11 @@ def main() -> None:
         action="store_true",
         help="전처리 결과 .built.md 파일을 지우지 않음 (디버깅용)",
     )
+    parser.add_argument(
+        "--allow-missing-citations",
+        action="store_true",
+        help="누락된 {{cite:키}} 가 있어도 빌드 계속 (기본은 실패). PDF 에 [MISSING CITATION] 이 박힐 수 있으니 임시 디버깅용으로만.",
+    )
     args = parser.parse_args()
 
     slides_path: Path = args.slides.resolve()
@@ -220,7 +234,18 @@ def main() -> None:
     new_content, missing = substitute_placeholders(content, refs)
 
     if missing:
-        print(f"[build] ⚠️  누락된 인용 키: {sorted(set(missing))}")
+        missing_keys = sorted(set(missing))
+        if args.allow_missing_citations:
+            print(
+                f"[build] ⚠️  누락된 인용 키 (--allow-missing-citations 로 통과): {missing_keys}",
+                file=sys.stderr,
+            )
+        else:
+            sys.exit(
+                f"ERROR: refs.toml 에 없는 인용 키: {missing_keys}\n"
+                f"       refs.toml ({refs_path}) 에 추가하거나, "
+                f"임시로 빌드만 보려면 --allow-missing-citations 플래그를 붙이세요."
+            )
 
     new_content = substitute_mermaid_blocks(new_content, slides_path)
 

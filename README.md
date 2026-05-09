@@ -6,6 +6,52 @@
 
 ---
 
+## 🆕 업데이트: 안정성 + Mermaid 폭 제어 + 다국가/학회 패턴 (2026-05-09)
+
+### 인용 키 누락 시 빌드 실패 (안전성)
+
+이전엔 `refs.toml` 에 없는 `{{cite:키}}` 가 PDF 에 `[MISSING CITATION: 키]` 로 그대로 박혀 발표 직전에야 발견되는 사고가 있었습니다. 이제 기본은 **즉시 빌드 실패**, 임시 디버깅 시에만 `--allow-missing-citations` 플래그로 통과 가능.
+
+```bash
+python3 bin/build.py slides.md            # 누락 시 fail
+python3 bin/build.py slides.md --allow-missing-citations  # 디버깅용
+```
+
+### Mermaid 폭 어노테이션이 실제로 작동
+
+이전엔 ` ```mermaid {width: 50%}` 어노테이션이 PDF 에서 사실상 무시되었습니다 (Marp 의 raw HTML inline `style` 속성 sanitize). 이제 클래스 기반 (`.w5` ~ `.w100` + `.w33`/`.w66`) 으로 전환되어 정확히 작동합니다.
+
+```markdown
+```mermaid {width: 50%}
+flowchart LR
+  A --> B
+```
+```
+
+- **5% 단위 반올림** (예: `42%` → `40%`, `48%` → `50%`), 범위 5~100% 클램프
+- 특수값 `33%`, `66%` 만 정확히 1/3, 2/3
+- 어노테이션 없으면 100% (섹션 전체 폭)
+
+### 새 패턴 5종 추가
+
+`.flow-row` 로 부족한 시각 표현을 위한 마스터 예시 + 자산 묶음:
+
+- **`patterns/country-flags/`** — G20 + EU 20개국 SVG 국기, 4가지 마크업 패턴 (인라인/카드/카탈로그/타임라인). 사이즈 클래스 `flag-xs/sm/lg/xl`
+- **`patterns/country-comparison/`** — 4가지 비교 레이아웃 (overview-bar / policy-cards / timeline / comparison-table). 마스터 예시: AI 보안 정책 5개국
+- **`patterns/conference-logos/`** — 12개 AI/CS 학회 자산 (NeurIPS·ICML·ICLR·AAAI·IJCAI·KDD·CVPR·ICCV·ECCV·ACL·EMNLP·SIGMOD) + 8가지 layout (`.unified-card`, `.paper-card-grid`, `.pub-timeline`, `.vt-timeline`, `.pub-heatmap`, `.hero-conf`)
+- **`patterns/newspaper-clip/`** — 신문기사 클립 8가지 변형 (텍스트 only / 사진 / 한글 / 영문 + 번역). WebSearch + og:image 다운로드 워크플로우 포함
+- **`patterns/figure-caption/`** — 그림 캡션/번호 자동화 (`Fig. N` 자동 prefix, 흰여백 자동 trim, 메시지 중심 캡션 작성 가이드). 통합 빌드 스크립트 `build_figcap.py` 한 번에
+
+### figure-caption 빌드 스크립트 이식성
+
+`patterns/figure-caption/build_figcap.py` 가 절대경로 (`Path.home() / 'wj' / ...`) 박혀있어 다른 위치로 옮기면 깨졌었습니다. 이제 `SCRIPT_DIR.parents[1]` 기준 상대경로 + `MARP_BUILD.exists()` 사전 체크.
+
+### `reviewer/` 하위 디렉토리 — 마지막 점검 봇 가이드
+
+빌드 후 모든 페이지를 시각 검수하는 subagent (`marp-deck-reviewer`) 의 검수 룰북 + 자동수정 처방전. 매 빌드가 아니라 마무리 1회 호출용.
+
+---
+
 ## 🆕 업데이트: Mermaid 도식 플로우 통합 (2026-04-23)
 
 `.flow-row` 유틸리티는 **가로 한 줄 파이프라인** 만 가능했습니다. 대각선·분기·피드백 루프 같은 복잡한 토폴로지는 표현할 수 없었는데, 이제 ```` ```mermaid ```` 코드블럭을 쓰면 `build.py` 가 빌드 타임에 `mmdc` 로 SVG 렌더 → DAMI 네이비 테마 적용 → data URI 로 슬라이드에 주입합니다.

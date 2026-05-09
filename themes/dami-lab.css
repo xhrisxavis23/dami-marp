@@ -13,8 +13,8 @@
 
 /* ===== 디자인 토큰 ===== */
 :root {
-  --navy:    #0b2c5a;
-  --navy-d:  #071c3d;
+  --navy:    #05264e;
+  --navy-d:  #03172f;
   --blue:    #1d4ed8;
   --red:     #dc2626;
   --green:   #16a34a;
@@ -199,7 +199,7 @@ section::after {
 
 /* ----- .title : 표지 (네이비 풀블리드 + 상하 흰 수평선) ----- */
 section.title {
-  background: #0b2c5a !important;
+  background: #05264e !important;
   color: #fff;
   padding: 0 !important;
 }
@@ -317,7 +317,7 @@ section.section::before {
   right: 0;
   width: auto;              /* base section::before의 width:56px 를 명시적으로 덮음 */
   height: 63%;
-  background: #0b2c5a;
+  background: #05264e;
   background-image: none;   /* base의 url(dami_logo.png) 을 확실히 제거 */
   z-index: 1;
 }
@@ -387,6 +387,7 @@ section .callout {
   color: var(--text);
 }
 section .callout strong { color: var(--red); }
+section .callout p { margin: 0; }
 
 /* .callout.arrow : 앞에 빨간 화살표 아이콘 */
 section .callout.arrow {
@@ -479,13 +480,40 @@ section .mermaid-embed {
   display: flex;
   justify-content: center;
   align-items: center;
+  align-self: center;     /* 폭 < 100% 일 때도 가로 중앙 정렬 */
   margin: 8px 0;
+  width: 100%;
   max-height: 440px;
 }
 section .mermaid-embed img,
 section .mermaid-embed svg {
-  max-width: 100%;
+  width: 100%;
   max-height: 440px;
   height: auto;
   object-fit: contain;
 }
+
+/* mermaid 폭 클래스 — marp/marpit 이 inline style 을 무시하므로 클래스 사용.
+   build.py 가 ```mermaid {width: N%} 어노테이션을 5% 스텝으로 반올림해 부여 (+ 특수 33/66) */
+section .mermaid-embed.w5  { width:   5% !important; }
+section .mermaid-embed.w10 { width:  10% !important; }
+section .mermaid-embed.w15 { width:  15% !important; }
+section .mermaid-embed.w20 { width:  20% !important; }
+section .mermaid-embed.w25 { width:  25% !important; }
+section .mermaid-embed.w30 { width:  30% !important; }
+section .mermaid-embed.w33 { width: 33.333% !important; }
+section .mermaid-embed.w35 { width:  35% !important; }
+section .mermaid-embed.w40 { width:  40% !important; }
+section .mermaid-embed.w45 { width:  45% !important; }
+section .mermaid-embed.w50 { width:  50% !important; }
+section .mermaid-embed.w55 { width:  55% !important; }
+section .mermaid-embed.w60 { width:  60% !important; }
+section .mermaid-embed.w65 { width:  65% !important; }
+section .mermaid-embed.w66 { width: 66.667% !important; }
+section .mermaid-embed.w70 { width:  70% !important; }
+section .mermaid-embed.w75 { width:  75% !important; }
+section .mermaid-embed.w80 { width:  80% !important; }
+section .mermaid-embed.w85 { width:  85% !important; }
+section .mermaid-embed.w90 { width:  90% !important; }
+section .mermaid-embed.w95 { width:  95% !important; }
+section .mermaid-embed.w100 { width: 100% !important; }

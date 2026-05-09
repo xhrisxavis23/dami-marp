@@ -77,7 +77,7 @@ marp --version          # 확인: v4.3.1 설치됨
 >
 > 소스 없이 대화만으로 만드는 덱은 이 규칙 예외.
 
-1. 새 프로젝트 폴더 만들기 (`projects/YYYY-MM-DD-<이름>/`)
+1. 새 프로젝트 폴더 만들기 (`ppt_generation/projects/<YYYY-MM-DD-이름>/`)
 2. 로고 파일 2개 복사
    ```bash
    cp .claude/skills/marp/assets/dami_logo.png      ppt_generation/projects/<name>/assets/
@@ -99,6 +99,16 @@ marp --version          # 확인: v4.3.1 설치됨
    ```
 
 **덱이 25장 이상으로 클 것 같으면** → [patterns/building-large-decks.md](patterns/building-large-decks.md) 의 outline → chunk → subagent → 병합 워크플로우 따를 것.
+
+**사용자가 슬라이드에 신문기사를 인용/추가해달라고 하면** → [patterns/newspaper-clip/README.md](patterns/newspaper-clip/README.md) 무조건 먼저 읽고 그 워크플로우(WebSearch → og:image 다운로드 → 8가지 변형 중 선택 → CSS+HTML 복붙) 따를 것. CSS·마크업 정답지는 같은 폴더의 `slides.md`.
+
+**사용자가 슬라이드에 국가별 라벨/국기를 표기해달라고 하면** → [patterns/country-flags/README.md](patterns/country-flags/README.md) 보고 G20 + EU 20개 SVG 국기 (`flags/<code>.svg`) 와 4가지 마크업 패턴(인라인·카드·카탈로그·타임라인) 사용. 사이즈 클래스: `flag-xs/sm/(default)/lg/xl`. CSS·마크업 정답지는 같은 폴더의 `slides.md`.
+
+**사용자가 여러 국가의 정책·제도·통계를 비교 정리해달라고 하면** → [patterns/country-comparison/README.md](patterns/country-comparison/README.md) 보고 4가지 비교 레이아웃(overview-bar / policy-cards / timeline / comparison-table) 사용. 워크플로우: WebSearch 로 국가별 5요소(법명·일자·강제력·적용·의무) 수집 → 1+2 또는 1+4 또는 풀세트로 narrative 구성. `country-flags` 의 SVG 자동 활용. 마스터 예시: AI 보안 정책 5개국.
+
+**사용자가 그림에 캡션 / 번호를 달아달라고 하면** → [patterns/figure-caption/SKILL.md](patterns/figure-caption/SKILL.md) 보고 메시지 중심 캡션 작성 + 그림 흰여백 자동 trim. 빌드는 `build_figcap.py` 한 번에 (prebuild + marp + cleanup, `.numbered.md` 자동 삭제). 캡션 어미 "~다" / 끝 마침표 금지, Left/Center/Right 콜론 형식.
+
+**사용자가 슬라이드에 학회 로고 / publication venue 를 표기해달라고 하면** → [patterns/conference-logos/README.md](patterns/conference-logos/README.md) 보고 12개 AI/CS 학회 자산 (NeurIPS · ICML · ICLR · AAAI · IJCAI · KDD · CVPR · ICCV · ECCV · ACL · EMNLP · SIGMOD) + 8가지 layout 패턴 사용. 자주 쓰는 컴포넌트: `.unified-card` (학회 catalog 카드), `.paper-card-grid(-compact)` (논문 highlights), `.pub-timeline` (시간순), `.vt-timeline` (수직 마일스톤), `.pub-heatmap` (학회×연도), `.hero-conf` (단일 hero 표지). 자산이 stale 하면 `download_official.sh` 재실행. 마스터 예시: `slides.md`, 활용 예시: `examples/robot-safety-flow.md`.
 
 ---
 
@@ -522,6 +532,18 @@ flowchart LR
 - 테마 컬러·폰트는 [themes/mermaid-config.json](themes/mermaid-config.json) 에서 관리 (네이비 `#0b2c5a`, Pretendard).
 - CSS `.mermaid-embed` 래퍼가 slide 세로 한계(`max-height: 440px`) 를 강제하므로, 노드가 많으면 `flowchart TD` 는 자동 축소됨.
 
+**폭 조절** — fence 옆 어노테이션:
+````markdown
+```mermaid {width: 50%}
+flowchart LR
+  ...
+```
+````
+- 내부적으로 **5% 단위 반올림** (예: `42%` → `40%`, `48%` → `50%`). 범위 5~100% 로 클램프
+- 특수값 `33%`, `66%` 만 정확히 1/3, 2/3 (`33.333%`/`66.667%`)
+- 어노테이션 없으면 100% (섹션 전체 폭)
+- marp/marpit 이 raw HTML inline style 을 무시하므로 클래스 기반 (`.w50`, `.w30` 등). 사용자 `style:|` 에서 폭 override 하려면 `width: ... !important` 필수
+
 **라벨 작성 주의** — Mermaid + Chromium SVG-in-img 렌더 경로에서 **박스 라벨 마지막 글자가 clip 될 수 있음**. 특히 `.` 로 끝나거나 영문 5~6자 단일 단어일 때. 상세: [lessons.md#mermaid-label-clip](lessons.md#mermaid-label-clip).
 
 - BAD: `[slides.md]`, `[built]`, `[mermaid 렌더]`
@@ -529,6 +551,28 @@ flowchart LR
 - 팁: 라벨 끝에 한글 또는 넓은 CJK 문자가 오도록 구성하면 안전.
 
 **예시 덱**: [temp_works/marp-theme-test/test5/mermaid-flowchart-demo.md](../../../temp_works/marp-theme-test/test5/mermaid-flowchart-demo.md) — 파이프라인/분기/루프 3가지 패턴.
+
+---
+
+## 검수 (Final Review)
+
+덱 작성이 끝났으면 — 매 빌드마다가 아니라 **마무리 단계 1회** — 검수를 돌립니다.
+
+- 가이드: [reviewer/README.md](reviewer/README.md), [reviewer/detect.md](reviewer/detect.md), [reviewer/fix.md](reviewer/fix.md), [reviewer/persona.md](reviewer/persona.md)
+- 호출: 사용자가 "검수해줘" / "마지막 점검" / "최종 확인" 류 요청을 하면 `marp-deck-reviewer` subagent 호출 (Agent tool, `subagent_type: "marp-deck-reviewer"`)
+- 봇은 자동 수정 절대 금지 (Edit/Write 도구 미보유). 표 보고 → 사용자 일괄 승인 → 메인 Claude 가 fix.md 처방대로 적용
+
+**검수 시점**:
+- 슬라이드 모두 작성 + 빌드 통과 후
+- 큰 구조 변경 (페이지 추가/삭제) 후
+- 발표 직전 최종 점검
+
+**호출 전 준비**:
+- 덱 빌드 완료 (`python3 .claude/skills/marp/bin/build.py <deck>.md`)
+- 페이지 PNG 렌더 (`pdftoppm -r 100 <deck>.pdf pages/page -png`)
+- `refs.toml` 같은 폴더에 위치
+
+봇은 페이지별 문제를 표(`Page | Severity | Category | Detail | Fix-ID`) 로 보고하고 일괄 승인을 요청합니다. P0 (overflow / 깨진 페이지) 가 있으면 P1/P2 는 미루고 P0 부터 처리.
 
 ---
 
