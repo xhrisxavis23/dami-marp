@@ -42,7 +42,7 @@
    ```bash
    cp .claude/skills/marp/patterns/conference-poster/poster-theme.css <proj>/
    cp .claude/skills/marp/assets/dami_logo_full.png <proj>/assets/
-   # 동국대 로고는 별도 (assets 폴더 또는 기존 포스터 프로젝트에서 복사)
+   cp .claude/skills/marp/assets/dongguk_about_logo.png <proj>/assets/
    ```
 3. **마크다운 작성** — 아래 "구조 템플릿" 복붙
 4. **인용 치환 (refs.toml 있다면)**
