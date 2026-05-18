@@ -6,6 +6,39 @@
 
 ---
 
+## 🆕 업데이트: 학회 포스터 패턴 추가 (2026-05-18)
+
+기본 slide theme (1280×720) 으로는 안 되는 **한 장짜리 학회 발표 포스터** (A0 841×1189mm, 1m×2.1m 등) 를 위한 별도 패턴을 추가했습니다.
+
+- **`patterns/conference-poster/`** — A0/portrait 포스터 시드
+  - [`README.md`](patterns/conference-poster/README.md) — 워크플로우 · 컴포넌트 사전 · 함정 8가지 · 사이즈별 폰트 가이드
+  - [`poster-theme.css`](patterns/conference-poster/poster-theme.css) — A0 calibrated 시드 CSS (mm 단위 폰트, `@size poster` 선언)
+  - [`references-analysis.md`](patterns/conference-poster/references-analysis.md) — DAMI Lab 선행 포스터 4종 (산공 2023/24/25, 자료분석 2023) 양식 분석 (설계 근거)
+- **`assets/dongguk_about_logo.png`** — 동국대학교 공식 로고 추가 (포스터 하단 로고 띠용)
+
+### 슬라이드 vs 포스터 핵심 차이
+
+| | Slide deck | Poster |
+|---|---|---|
+| 테마 | `theme: dami-lab` | `theme: dami-poster` (이 패턴의 별도 CSS) |
+| 사이즈 | 1280×720 (16:9 고정) | `@size poster <w> <h>` 커스텀 |
+| 빌드 | `build.py` 한 번 | **2단계** — `build.py --keep-built` 로 `.built.md` 만 만들고 `marp --theme-set poster-theme.css` 직접 호출 |
+| 폰트 단위 | px (~22px 본문) | mm (5~15mm, 사이즈에 비례) |
+| 레이아웃 | h1 + h2 + bullets | 2단 카드 격자 (`.poster-col × .sec`) |
+| 로고 | 우상단 워터마크 | 하단 풀폭 띠 (`.poster-logos`) |
+
+`build.py` 가 항상 `dami-lab.css` 를 강제 주입하기 때문에 포스터 테마는 marp 를 직접 호출해야 합니다. 이 우회 경로와 함께 **KaTeX in raw HTML / 세로 가운데 정렬 leak / Firefox timeout / 카드 stretch 와 컨텐츠 정렬** 등 포스터 작업에서 자주 부딪히는 8가지 함정을 패턴 README 에 정리.
+
+### 컴포넌트 어휘
+
+`poster-header` · `poster-body` · `poster-col` · `sec` · `sec-body` · `keyclaim` (노란 callout) · `implication` (파란 callout) · `twoup` (2 grid 비교) · `pipeline` + `step` (단계별 stack) · `poster-logos` (하단 2-grid 로고 띠)
+
+검증된 레퍼런스 — LLM 언러닝 포스터 (1m × 2.1m) 와 FORGE 팩터 마이닝 포스터 (A0) 두 종 모두 이 패턴으로 제작 후 검증 완료.
+
+자세한 사용법: [`patterns/conference-poster/README.md`](patterns/conference-poster/README.md)
+
+---
+
 ## 🆕 업데이트: 안정성 + Mermaid 폭 제어 + 다국가/학회 패턴 (2026-05-09)
 
 ### 인용 키 누락 시 빌드 실패 (안전성)
@@ -110,11 +143,11 @@ flowchart LR
 |---|---|
 | [`themes/dami-lab.css`](themes/dami-lab.css) | 메인 테마 CSS (슬라이드 타입 5종 + 유틸리티 클래스) |
 | [`bin/build.py`](bin/build.py) | 빌드 프리프로세서 — `{{cite:키}}` placeholder 치환 후 marp 실행 |
-| [`assets/`](assets/) | DAMI Lab 로고 2종 (심플 / 풀) |
+| [`assets/`](assets/) | DAMI Lab 로고 2종 (심플 / 풀) + 동국대학교 공식 로고 (포스터용) |
 | [`refs.example.toml`](refs.example.toml) | 논문 인용 metadata 포맷 예시 |
 | [`SKILL.md`](SKILL.md) | 슬라이드 작성 가이드 본문 (슬라이드 타입, 유틸리티, 인용 관리) |
 | [`lessons.md`](lessons.md) | 테마를 만들며 겪은 버그/삽질 기록 (PDF 렌더 불안정, flanking, 세로 정렬 등) |
-| [`patterns/`](patterns/) | 워크플로우 패턴 (예: 25장 넘는 큰 덱은 outline → chunk → subagent) |
+| [`patterns/`](patterns/) | 워크플로우·시각 패턴 (학회 포스터·국기·학회 로고·신문 클립·도식 캡션 등) |
 | [`themes/mermaid-config.json`](themes/mermaid-config.json) | Mermaid flowchart 테마 (DAMI 네이비, Pretendard) |
 | [`examples/`](examples/) | 실제로 빌드해서 쓴 5개 덱 — `md` + `pdf` + `assets` 세트 |
 
@@ -289,10 +322,18 @@ dami-marp/
 │   ├── dami-lab.css          # 메인 테마 CSS
 │   └── mermaid-config.json   # Mermaid flowchart 테마 (네이비 + Pretendard)
 ├── assets/
-│   ├── dami_logo.png         # 심플 로고 (일반 슬라이드 우상단)
-│   └── dami_logo_full.png    # 풀 로고 (표지용)
+│   ├── dami_logo.png            # 심플 로고 (일반 슬라이드 우상단)
+│   ├── dami_logo_full.png       # 풀 로고 (표지용)
+│   └── dongguk_about_logo.png   # 동국대 공식 로고 (포스터 하단 띠용)
 ├── patterns/
-│   └── building-large-decks.md  # 25장 이상 덱 워크플로우
+│   ├── building-large-decks.md  # 25장 이상 덱 워크플로우
+│   ├── conference-poster/       # 학회 포스터 (A0/1×2.1m): 테마 + 컴포넌트 + 함정
+│   ├── codex-image-gen/         # codex MCP 로 이미지 생성
+│   ├── conference-logos/        # AI/CS 학회 12종 로고 + 8 레이아웃
+│   ├── country-flags/           # G20+EU 국기 SVG + 사이즈 클래스
+│   ├── country-comparison/      # 국가별 정책 비교 (4 레이아웃)
+│   ├── newspaper-clip/          # 신문 기사 클립 8 변형
+│   └── figure-caption/          # 그림 캡션·번호 자동화
 └── examples/
     ├── ax-forward-plan/
     ├── ax-survey-results/
