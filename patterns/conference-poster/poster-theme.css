@@ -1,0 +1,378 @@
+/* @theme dami-poster */
+
+/* Custom poster theme — A0 portrait (841mm × 1189mm, ISO 216) single-page poster
+   Built on the DAMI Lab visual identity but with poster-scale typography. */
+
+@import 'default';
+
+@size poster 841mm 1189mm;
+
+:root {
+  --navy:    #0b2c5a;
+  --navy-d:  #03172f;
+  --accent:  #4ea2ff;
+  --gold-d:  #b45c00;
+  --bg-soft: #f3f6fb;
+  --text:    #1a1a1a;
+  --muted:   #555;
+}
+
+/* ===== Base section ===== */
+section {
+  width: 841mm !important;
+  height: 1189mm !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  background: #ffffff !important;
+  display: flex !important;
+  flex-direction: column !important;
+  flex-flow: column nowrap !important;
+  justify-content: flex-start !important;
+  align-items: stretch !important;
+  place-content: flex-start stretch !important;
+  align-content: flex-start !important;
+  color: var(--text);
+  font-family: 'Pretendard', 'Noto Sans KR', -apple-system, sans-serif;
+  overflow: hidden;
+  border: 1.5mm solid var(--navy);
+  box-sizing: border-box;
+  font-size: 5.7mm;
+  line-height: 1.5;
+}
+
+section > .poster-header { flex: 0 0 auto; }
+section > .poster-body   { flex: 1 1 auto; min-height: 0; }
+section > .poster-logos  { flex: 0 0 auto; }
+
+section::before, section::after { content: none; background: none; display: none; }
+footer, header { display: none; }
+
+/* ===== Header band ===== */
+.poster-header {
+  background: var(--navy);
+  color: #fff;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 16mm 30mm 14mm 50mm;
+  position: relative;
+  border-bottom: 1.6mm solid var(--accent);
+}
+.poster-header::before {
+  content: "";
+  position: absolute;
+  left: 14mm;
+  top: 12mm;
+  bottom: 11mm;
+  width: 4mm;
+  background: linear-gradient(180deg, var(--accent) 0%, var(--navy) 100%);
+  border-radius: 1.2mm;
+}
+.poster-header h1 {
+  font-size: 15.5mm;
+  line-height: 1.1;
+  margin: 0 0 5mm 0;
+  color: #fff;
+  font-weight: 800;
+  letter-spacing: -0.15mm;
+  border: none;
+  padding: 0;
+  background: none;
+  white-space: nowrap;
+}
+.poster-header .subtitle {
+  font-size: 10mm;
+  color: #cfe2ff;
+  font-weight: 500;
+  margin-bottom: 7mm;
+  line-height: 1.22;
+}
+.poster-header .authors {
+  font-size: 10mm;
+  color: #fff;
+  line-height: 1.3;
+  margin-bottom: 3mm;
+  font-weight: 600;
+}
+.poster-header .authors sup { font-size: 0.62em; vertical-align: super; font-weight: 500; }
+.poster-header .affil {
+  font-size: 7.7mm;
+  color: #cfe2ff;
+  line-height: 1.35;
+}
+.poster-header .affil sup { font-size: 0.65em; vertical-align: super; }
+
+/* ===== Body 2-col ===== */
+.poster-body {
+  display: flex;
+  flex-direction: row;
+  gap: 12mm;
+  padding: 14mm 20mm 12mm 20mm;
+  box-sizing: border-box;
+  width: 100%;
+  align-items: stretch;
+}
+.poster-col {
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: 7mm;
+}
+.poster-col > .sec {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+}
+.poster-col > .sec > .sec-body {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.poster-col > .sec:first-child > .sec-body {
+  justify-content: flex-start;
+}
+
+/* ===== Section card ===== */
+.sec {
+  background: #fff;
+  border: 0.7mm solid var(--navy);
+  border-radius: 1.2mm;
+  margin-bottom: 0;
+  overflow: hidden;
+  page-break-inside: avoid;
+}
+.sec > h2 {
+  background: var(--navy);
+  color: #fff;
+  margin: 0;
+  padding: 4.5mm 7mm;
+  font-size: 14.5mm;
+  font-weight: 700;
+  text-align: center;
+  letter-spacing: -0.12mm;
+  border: none;
+}
+.sec-body {
+  padding: 6mm 9mm 6mm 9mm;
+  font-size: 9.5mm;
+  line-height: 1.4;
+  color: var(--text);
+  text-align: left;
+}
+.sec-body p { margin: 0 0 2.5mm 0; }
+.sec-body h3 {
+  font-size: 9.5mm;
+  color: var(--navy);
+  margin: 2.5mm 0 1.6mm 0;
+  font-weight: 700;
+  border-left: 1.6mm solid var(--navy);
+  padding-left: 2.8mm;
+}
+.sec-body ul, .sec-body ol {
+  margin: 1.4mm 0 2.4mm 0;
+  padding-left: 5.8mm;
+}
+.sec-body li {
+  margin-bottom: 1.4mm;
+  line-height: 1.36;
+}
+.sec-body li::marker { color: var(--navy); }
+.sec-body ul ul { margin: 1mm 0 1.4mm 0; padding-left: 4.5mm; }
+.sec-body ul ul li { font-size: 0.94em; color: #2c2c2c; }
+.sec-body strong { color: var(--navy); font-weight: 700; }
+.sec-body em { color: #2c2c2c; }
+.sec-body img {
+  display: block;
+  margin: 3mm auto;
+  width: 100%;
+  max-width: 100%;
+  max-height: 250mm;
+  height: auto;
+  border-radius: 0.8mm;
+}
+.sec-body img.full-bleed {
+  width: calc(100% + 18mm);
+  max-width: calc(100% + 18mm);
+  margin-left: -9mm;
+  margin-right: -9mm;
+  border-radius: 0;
+}
+.sec-body p:has(img) { text-align: center; margin: 3mm 0; }
+.figcap, .tab-cap { display: none; }
+.keyclaim {
+  background: #fff8e1;
+  border-left: 2.2mm solid #ffb300;
+  padding: 4.5mm 5mm;
+  margin: 3mm 0 0 0;
+  font-size: 9.1mm;
+  line-height: 1.4;
+  border-radius: 0 0.8mm 0.8mm 0;
+}
+.keyclaim strong { color: var(--gold-d); }
+
+/* ===== Tables ===== */
+.sec-body table {
+  width: auto;
+  max-width: 100%;
+  margin: 3mm auto;
+  border-collapse: collapse;
+  font-size: 9.1mm;
+  line-height: 1.24;
+}
+.sec-body table th {
+  background: var(--navy);
+  color: #fff;
+  padding: 2.5mm 4mm;
+  text-align: center;
+  font-weight: 600;
+  border: 0.28mm solid var(--navy);
+}
+.sec-body table td {
+  padding: 2.5mm 4mm;
+  text-align: center;
+  border: 0.28mm solid #c0c8d4;
+  background: #fff;
+}
+.sec-body table tr:nth-child(even) td { background: var(--bg-soft); }
+.sec-body table .row-h {
+  background: #e6ecf5;
+  font-weight: 600;
+  color: var(--navy);
+  text-align: left;
+  padding-left: 2.8mm;
+}
+.sec-body table .hi { background: #fff3b8; font-weight: 700; color: var(--gold-d); }
+
+/* ===== Math ===== */
+.sec-body .katex-display { margin: 3mm 0 !important; font-size: 1em; }
+.sec-body .katex { font-size: 1.08em; }
+
+/* ===== Two-up ===== */
+.twoup {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3.2mm;
+  margin: 2.8mm 0 1.8mm 0;
+}
+.twoup .col {
+  background: var(--bg-soft);
+  border-left: 1.6mm solid var(--navy);
+  padding: 2.8mm 3.4mm;
+  border-radius: 0 0.8mm 0.8mm 0;
+}
+.twoup .col h4 {
+  font-size: 9.5mm;
+  color: var(--navy);
+  margin: 0 0 1.6mm 0;
+  font-weight: 700;
+}
+.twoup .col p { font-size: 8.9mm; line-height: 1.32; margin: 0; }
+
+/* ===== Pipeline ===== */
+.pipeline {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 5mm;
+  margin: 3.2mm 0 1.8mm 0;
+}
+.pipeline .step {
+  background: var(--bg-soft);
+  border: 0.5mm solid #b9c4d8;
+  border-radius: 1.2mm;
+  padding: 3.8mm 4.4mm;
+}
+.pipeline .step .step-head {
+  display: flex;
+  align-items: center;
+  gap: 2.4mm;
+  margin-bottom: 1.8mm;
+}
+.pipeline .step .num {
+  flex: 0 0 auto;
+  display: inline-block;
+  background: var(--navy);
+  color: #fff;
+  width: 13mm;
+  height: 13mm;
+  line-height: 13mm;
+  text-align: center;
+  border-radius: 50%;
+  font-weight: 700;
+  font-size: 8.5mm;
+}
+.pipeline .step .lbl {
+  font-size: 9.9mm;
+  font-weight: 700;
+  color: var(--navy);
+}
+.pipeline .step p {
+  font-size: 8.9mm;
+  margin: 0;
+  line-height: 1.32;
+  color: var(--text);
+}
+
+/* ===== Special cards ===== */
+.insight-card > h2 { background: #1d4ed8; }
+.insight-body { background: #f6f9ff; }
+
+.implication {
+  background: #eef3fb;
+  border-left: 1.8mm solid #1d4ed8;
+  padding: 3.8mm 5mm 3mm 5mm;
+  margin: 3.8mm 0 0 0;
+  border-radius: 0 0.8mm 0.8mm 0;
+}
+.implication .impl-title {
+  font-size: 9.1mm;
+  font-weight: 700;
+  color: #1d4ed8;
+  margin-bottom: 1.6mm;
+  letter-spacing: -0.08mm;
+}
+.implication ul { margin: 0; padding-left: 5mm; }
+.implication li { font-size: 8.9mm; line-height: 1.36; margin-bottom: 1.4mm; }
+.implication li:last-child { margin-bottom: 0; }
+.implication.yellow {
+  background: #fff8e1;
+  border-left-color: #ffb300;
+}
+.implication.yellow .impl-title { color: var(--gold-d); }
+
+.ack-card > h2 { background: #03172f; }
+.ack-body { background: #fafbfd; }
+.ack-body p { font-size: 9mm; line-height: 1.42; margin: 0; color: var(--text); }
+.ack-body strong { color: var(--navy); }
+
+/* ===== Logo strip — 2-col grid mirroring poster body columns ===== */
+.poster-logos {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10mm 20mm 12mm 20mm;
+  background: #05264E;
+  border-top: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12mm;
+  align-items: center;
+}
+.poster-logos .logo-block {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.poster-logos img {
+  display: block;
+  height: auto;
+  border-radius: 0;
+}
+.poster-logos .logo-dongguk {
+  height: 38mm;
+  width: auto;
+}
+.poster-logos .logo-dami {
+  height: 68mm;
+  width: auto;
+}
